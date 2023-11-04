@@ -37,7 +37,7 @@ do \
 } while (0); \
 }\
 
-// IP報頭
+// IP報頭  共20bytes
 typedef struct
 {
 	unsigned char hdr_len : 4;         //4位頭部長度
@@ -65,7 +65,7 @@ typedef struct
 
 
 //報文解碼結構
-typedef struct
+typedef struct 
 {
 	USHORT usSeqNo;          //序列號
 	DWORD dwRoundTripTime;   //返回時間
@@ -253,10 +253,10 @@ void pingWrapper::ping(const char* ip)
 	int iTTL = 64;                      //TTL初始值爲1
 	int recvNum = 0, loseNum = 0;
 	bool bReachDestHost = false;       //循環退出標誌
-	int iMaxHot = DEF_MAX_HOP;         //循環的最大次數
+	int iMaxHop = DEF_MAX_HOP;         //循環的最大次數
 	DECODE_RESULT DecodeResult;      //傳遞給報文解碼函數的結構化參數
 	int sumTime = 0;
-	while (!bReachDestHost && iMaxHot--)
+	while (!bReachDestHost && iMaxHop--)
 	{
 		//設置IP報頭的TTL字段
 		setsockopt(sockRaw, IPPROTO_IP, IP_TTL, (char*)&iTTL, sizeof(iTTL));
@@ -264,7 +264,7 @@ void pingWrapper::ping(const char* ip)
 		((ICMP_HEADER*)IcmpSendBuf)->cksum = 0;                 //效驗和先置爲0
 		((ICMP_HEADER*)IcmpSendBuf)->seq = htons(usSeqNo++);    //填充序列號
 		((ICMP_HEADER*)IcmpSendBuf)->cksum = checksum((USHORT*)IcmpSendBuf, sizeof(ICMP_HEADER) + DEF_ICMP_DATA_SIZE);  //計算效驗和
-
+		
 		//記錄序列號和當前時間
 		DecodeResult.usSeqNo = ((ICMP_HEADER*)IcmpSendBuf)->seq;    //當前序號
 		DecodeResult.dwRoundTripTime = this->getTime();              //當前時間
