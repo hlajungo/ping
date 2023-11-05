@@ -250,7 +250,7 @@ void pingWrapper::ping(const char* ip)
 	pIcmpHeader->id = (USHORT)this->getCurProcessId();   //ID字段爲當前進程號
 	memset(IcmpSendBuf + sizeof(ICMP_HEADER), 'E', DEF_ICMP_DATA_SIZE);   //數據字段
 	USHORT usSeqNo = 0;                //ICMP報文序列號
-	int iTTL = 64;                      //TTL初始值爲1
+	int iTTL = 64;                      //TTL初始值爲64
 	int recvNum = 0, loseNum = 0;
 	bool bReachDestHost = false;       //循環退出標誌
 	int iMaxHop = DEF_MAX_HOP;         //循環的最大次數
@@ -297,6 +297,11 @@ void pingWrapper::ping(const char* ip)
 						break;
 					}
 
+				}
+				else
+				{
+					_LOG("DecodeIcmpResponse() Err...");
+					break;
 				}
 			}
 			else if (this->isTimeOut())
